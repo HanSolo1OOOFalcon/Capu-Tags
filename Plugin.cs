@@ -1,67 +1,40 @@
 ﻿using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using CapuTags.Patches;
-using Fusion;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace CapuTags
 {
     [BepInPlugin(ModInfo.GUID, ModInfo.Name, ModInfo.Version)]
     public class Init : BasePlugin
     {
-        public static Init instance;
-        public Harmony harmonyInstance;
+        private Harmony _harmonyInstance;
 
         public override void Load()
         {
-            harmonyInstance = HarmonyPatcher.Patch(ModInfo.GUID);
-            instance = this;
-
+            _harmonyInstance = HarmonyPatcher.Patch(ModInfo.GUID);
             ClassInjector.RegisterTypeInIl2Cpp<NametagComponent>();
-
-            AddComponent<Stuff>();
         }
 
         public override bool Unload()
         {
-            if (harmonyInstance != null)
-                HarmonyPatcher.Unpatch(harmonyInstance);
+            if (_harmonyInstance != null)
+                HarmonyPatcher.Unpatch(_harmonyInstance);
 
             return true;
         }
     }
 
-    public class Stuff : MonoBehaviour
+    [HarmonyPatch(typeof(FusionPlayer), "Spawned")]
+    public class FusionPlayerSpawnedPatch
     {
-        public static List<Il2CppSystem.ValueTuple<FusionPlayer, PlayerRef>> values = new List<Il2CppSystem.ValueTuple<FusionPlayer, PlayerRef>>();
-
-        void Update()
+        private static void Postfix(FusionPlayer __instance)
         {
-            if (!FusionHub.InRoom || FusionHub.Instance.SpawnedPlayers == null)
+            if (__instance.IsLocalPlayer || __instance == null)
                 return;
-
-            if (values.Count != FusionHub.Instance.SpawnedPlayers.Count)
-            {
-                values.Clear();
-                foreach (var player in FusionHub.Instance.SpawnedPlayers)
-                {
-                    values.Add(player);
-                    var playerThing = player.Item1;
-                    if (playerThing.IsLocalPlayer)
-                        continue;
-
-                    if (playerThing.transform.Find("Head").GetComponent<NametagComponent>() == null)
-                    {
-                        var thing = playerThing.transform.Find("Head").gameObject.AddComponent<NametagComponent>();
-                        thing.playerName = playerThing.Username;
-                        thing.playerColor = playerThing.__Color;
-                    }
-                }
-            }
+            
+            __instance.transform.Find("Head").gameObject.AddComponent<NametagComponent>().player = __instance;
         }
     }
 }

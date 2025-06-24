@@ -6,20 +6,18 @@ namespace CapuTags
 {
     public class NametagComponent : MonoBehaviour
     {
-        public string playerName;
-        public Color playerColor;
-        private GameObject nametag;
+        // Making these variables public if someone would like to make an addon for CapuTags! (If you're reading this and making an addon, you're welcome and good luck)
+        public FusionPlayer player;
+        public GameObject nametag;
+        public TextMeshPro nametagText;
 
         void Start()
         {
-            nametag = new GameObject("Nametag");
+            nametag = new GameObject("CapuTagsNametag");
             nametag.transform.SetParent(transform);
-            nametag.transform.localPosition = new Vector3(0f, 0.5f, 0f);
-            nametag.transform.localRotation = Quaternion.identity;
-            TextMeshPro nametagText = nametag.AddComponent<TextMeshPro>();
-            nametagText.text = playerName;
+            nametag.transform.localPosition = new Vector3(0f, 0.5f, 0f); 
+            nametagText = nametag.AddComponent<TextMeshPro>();
             nametagText.fontSize = 3f;
-            nametagText.color = playerColor;
             nametagText.material.shader = Shader.Find("UI/Default");
             nametagText.alignment = TextAlignmentOptions.Center;
         }
@@ -39,6 +37,9 @@ namespace CapuTags
             {
                 nametag.transform.LookAt(Player.Instance.playerCam.gameObject.transform);
                 nametag.transform.Rotate(0, 180, 0);
+                
+                nametagText.text = player.Username;
+                nametagText.color = player.__Color;
             }
         }
     }
