@@ -21,7 +21,7 @@ namespace CapuTags
             if (__instance.IsLocalPlayer)
                 return;
             
-            __instance.transform.Find("Head").gameObject.AddComponent<NametagComponent>().player = __instance;
+            __instance.transform.Find("Head").Find("headTarget").Find("PlayerModel").Find("CapuchinRemade").Find("Capuchin").Find("torso").Find("head").gameObject.AddComponent<NametagComponent>().player = __instance;
         }
     }
 }

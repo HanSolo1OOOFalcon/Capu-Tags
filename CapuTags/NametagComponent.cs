@@ -11,6 +11,7 @@ namespace CapuTags
         public FusionPlayer player;
         public GameObject nametag;
         public TextMeshPro nametagText;
+        public Action OnTextChanged, OnColorChanged;
         private Color lastColor;
         private string lastName;
 
@@ -18,9 +19,9 @@ namespace CapuTags
         {
             nametag = new GameObject("CapuTagsNametag");
             nametag.transform.SetParent(transform);
-            nametag.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+            nametag.transform.localPosition = new Vector3(0f, 0.005f, 0f);
             nametagText = nametag.AddComponent<TextMeshPro>();
-            nametagText.fontSize = 3f;
+            nametagText.fontSize = 2f;
             nametagText.material.shader = Shader.Find("UI/Default");
             nametagText.alignment = TextAlignmentOptions.Center;
             nametagText.text = player.Username;
@@ -49,6 +50,7 @@ namespace CapuTags
                 {
                     nametagText.text = name;
                     lastName = name;
+                    OnTextChanged?.Invoke();
                 }
 
                 Color color = player.__Color;
@@ -56,6 +58,7 @@ namespace CapuTags
                 {
                     nametagText.color = color;
                     lastColor = color;
+                    OnColorChanged?.Invoke();
                 }
             }
         }
