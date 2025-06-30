@@ -26,6 +26,7 @@ namespace CapuTags
             nametagText.alignment = TextAlignmentOptions.Center;
             nametagText.text = player.Username;
             nametagText.color = player.__Color;
+            nametagText.font = GameObject.Find("Global/Levels/ObjectNotInMaps/Stump/TableOffset/QueueBoard/Text (TMP)").GetComponent<TextMeshPro>().font;
         }
 
         void OnDisable()
@@ -42,7 +43,10 @@ namespace CapuTags
             if (nametag != null)
             {
                 Transform nametagTransform = nametag.transform;
-                nametagTransform.LookAt(Player.Instance.playerCam.gameObject.transform);
+                nametagTransform.rotation = Quaternion.LookRotation(
+                    Player.Instance.playerCam.transform.position - nametagTransform.position,
+                    Player.Instance.playerCam.transform.up
+                );
                 nametagTransform.Rotate(0f, 180f, 0f);
 
                 string name = player.Username;
